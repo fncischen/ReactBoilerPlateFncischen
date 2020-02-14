@@ -26,12 +26,12 @@ import CenteredSection from './CenteredSection';
 import Form from './Form';
 import Input from './Input';
 import Section from './Section';
-import messages from './messages';
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
 import { makeSelectUsername } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import axios from 'axios';
 
 const key = 'home';
 
@@ -68,23 +68,14 @@ export function HomePage({
       </Helmet>
       <div>
         <CenteredSection>
-          <H2>
-            <FormattedMessage {...messages.startProjectHeader} />
-          </H2>
-          <p>
-            <FormattedMessage {...messages.startProjectMessage} />
-          </p>
         </CenteredSection>
         <Section>
           <H2>
-            <FormattedMessage {...messages.trymeHeader} />
+            Form For String Input
+
           </H2>
           <Form onSubmit={onSubmitForm}>
             <label htmlFor="username">
-              <FormattedMessage {...messages.trymeMessage} />
-              <AtPrefix>
-                <FormattedMessage {...messages.trymeAtPrefix} />
-              </AtPrefix>
               <Input
                 id="username"
                 type="text"
