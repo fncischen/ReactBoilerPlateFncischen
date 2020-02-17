@@ -1,0 +1,21 @@
+{
+  "name": "separatenodeserver",
+  "version": "1.0.0",
+  "description": "separateNodeServer acts as a separate backend server to hold data for the react boiler plate app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "node": "^13.8.0"
+  }
+}

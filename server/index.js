@@ -2,7 +2,6 @@
 
 const express = require('express');
 const logger = require('./logger');
-var cors = require('cors')
 
 const argv = require('./argv');
 const port = require('./port');
@@ -14,21 +13,19 @@ const ngrok =
     : false;
 const { resolve } = require('path');
 const app = express();
-let myApi = require('./routes/routes.js');
+// const router = express.Router();
 
-const arrayOfStringsRouter = require("./arrayofstrings.js");
+const bodyParser = require('body-parser');
 
-
-// If you need a backend, e.g. an API, add your custom backend-specific middleware here
-// app.use('/api', myApi);
-
-// In production we need to pass these values in instead of relying on webpack
 setup(app, {
   outputPath: resolve(process.cwd(), 'build'),
   publicPath: '/',
 });
 
-// get the intended host and port number, use localhost and port 3000 if not provided
+// If you need a backend, e.g. an API, add your custom backend-specific middleware here
+// app.use('/api', myApi);
+
+// Start your app.
 const customHost = argv.host || process.env.HOST;
 const host = customHost || null; // Let http.Server use its default IPv6/4 host
 const prettyHost = customHost || 'localhost';
@@ -42,11 +39,10 @@ app.get('*.js', (req, res, next) => {
 
 // Start your app.
 app.listen(port, host, async err => {
-  console.log("Our app started")
   if (err) {
     return logger.error(err.message);
   }
-
+  console.log("What's up!");
   // Connect to ngrok in dev mode
   if (ngrok) {
     let url;
@@ -55,14 +51,9 @@ app.listen(port, host, async err => {
     } catch (e) {
       return logger.error(e);
     }
+    console.log('Welcome!');
     logger.appStarted(port, prettyHost, url);
   } else {
     logger.appStarted(port, prettyHost);
   }
 });
-
-app.use(express.json());
-
-app.use("./myApi", myApi)
-
-

@@ -2,128 +2,78 @@
  * HomePage
  *
  * This is the first thing users see of our App, at the '/' route
+ *
  */
 
 import React, { useEffect, memo } from 'react';
-import PropTypes from 'prop-types';
-import { Helmet } from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
-
+import PropTypes from 'prop-types';
+import { reduxForm } from 'redux-form';
+import { render } from 'react-testing-library';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
-import {
-  makeSelectRepos,
-  makeSelectLoading,
-  makeSelectError,
-} from 'containers/App/selectors';
-import H2 from 'components/H2';
-import ReposList from 'components/ReposList';
-import AtPrefix from './AtPrefix';
-import CenteredSection from './CenteredSection';
+import Input from './Input.js';
 import Form from './Form';
-import Input from './Input';
-import Section from './Section';
-import { loadRepos } from '../App/actions';
-import { changeUsername } from './actions';
-import { makeSelectUsername } from './selectors';
-import reducer from './reducer';
-import saga from './saga';
-import axios from 'axios';
+import saga from '../Redux/saga.js';
+
+import reducer from '../Redux/reducer.js';
+
+import { stringAdded, stringChanged } from '../Redux/actions';
 
 const key = 'home';
 
-export function HomePage({
-  username,
-  loading,
-  error,
-  repos,
-  onSubmitForm,
-  onChangeUsername,
-}) {
+export function HomePage({ onStringAdded, onStringChanged, string }) {
+  console.log(saga);
   useInjectReducer({ key, reducer });
   useInjectSaga({ key, saga });
+  // conditional rendering
 
-  useEffect(() => {
-    // When initial state username is not null, submit the form to load repos
-    if (username && username.trim().length > 0) onSubmitForm();
-  }, []);
-
-  const reposListProps = {
-    loading,
-    error,
-    repos,
-  };
-
+  // use redux life cycles to keep track of button lifecycle
   return (
-    <article>
-      <Helmet>
-        <title>Home Page</title>
-        <meta
-          name="description"
-          content="A React.js Boilerplate application homepage"
-        />
-      </Helmet>
-      <div>
-        <CenteredSection>
-        </CenteredSection>
-        <Section>
-          <H2>
-            Form For String Input
-
-          </H2>
-          <Form onSubmit={onSubmitForm}>
-            <label htmlFor="username">
-              <Input
-                id="username"
-                type="text"
-                placeholder="mxstbr"
-                value={username}
-                onChange={onChangeUsername}
-              />
-            </label>
-          </Form>
-          <ReposList {...reposListProps} />
-        </Section>
-      </div>
-    </article>
+    <div>
+      <h1>
+        Please enter the string you'd like to add to our list.
+        <Form onSubmit={onStringAdded}>
+          <center>
+            <Input
+              id="string"
+              type="text"
+              placeholder="Enter your string here"
+              value={string}
+              onChange={onStringChanged}
+            />
+            <button> Press </button>
+          </center>
+        </Form>
+      </h1>
+    </div>
   );
 }
 
 HomePage.propTypes = {
-  loading: PropTypes.bool,
-  error: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-  repos: PropTypes.oneOfType([PropTypes.array, PropTypes.bool]),
-  onSubmitForm: PropTypes.func,
-  username: PropTypes.string,
-  onChangeUsername: PropTypes.func,
+  onStringAdded: PropTypes.func,
+  onStringChanged: PropTypes.func,
 };
 
-const mapStateToProps = createStructuredSelector({
-  repos: makeSelectRepos(),
-  username: makeSelectUsername(),
-  loading: makeSelectLoading(),
-  error: makeSelectError(),
-});
-
-export function mapDispatchToProps(dispatch) {
-  return {
-    onChangeUsername: evt => dispatch(changeUsername(evt.target.value)),
-    onSubmitForm: evt => {
-      if (evt !== undefined && evt.preventDefault) evt.preventDefault();
-      dispatch(loadRepos());
-    },
-  };
+// map state to props
+function mapStateToProps(state) {
+  const { string } = state;
+  // const totalDates = TotalDaysSelector(startDate, endDate)
+  return { string };
 }
 
-const withConnect = connect(
+// map dispatch to props
+const mapDispatchToProps = dispatch => ({
+  // when the string is added
+  onStringAdded: e => {
+    e.preventDefault();
+    dispatch(stringAdded());
+  },
+  onStringChanged: e => dispatch(stringChanged(e.target.value)),
+});
+
+export default connect(
   mapStateToProps,
   mapDispatchToProps,
-);
-
-export default compose(
-  withConnect,
-  memo,
 )(HomePage);
